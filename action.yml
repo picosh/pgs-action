@@ -30,3 +30,8 @@ runs:
       shell: bash
     - run: publish.sh
       shell: sh
+      env:
+        INPUT_KEY: ${{ inputs.key }}
+        INPUT_USER: ${{ inputs.user }}
+        INPUT_SRC: ${{ inputs.src }}
+        INPUT_PROJECT: ${{ inputs.project }}
