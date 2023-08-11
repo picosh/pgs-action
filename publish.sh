@@ -1,4 +1,4 @@
-#!/bin/sh -l
+#!/bin/bash
 
 echo -e "${INPUT_KEY}" >__TEMP_INPUT_KEY_FILE
 
