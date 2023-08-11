@@ -20,18 +20,14 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Check Runner OS
+    - name: check runner os
       if: ${{ runner.os != 'Linux' }}
       shell: bash
       run: |
         echo "::error title=⛔ error hint::Support Linux Only"
         exit 1
-    - run: echo "${{ github.action_path }}" >> $GITHUB_PATH
-      shell: bash
-    - run: publish.sh
-      shell: sh
-      env:
-        INPUT_KEY: ${{ inputs.key }}
-        INPUT_USER: ${{ inputs.user }}
-        INPUT_SRC: ${{ inputs.src }}
-        INPUT_PROJECT: ${{ inputs.project }}
+    - name: upload to pgs
+      run: |
+        echo -e "${{ inputs.key }}" >__TEMP_INPUT_KEY_FILE
+        chmod 600 __TEMP_INPUT_KEY_FILE
+        scp -s -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -v -i __TEMP_INPUT_KEY_FILE -r "${{ inputs.src }}" "${{ inputs.user }}"@pgs.sh:/"${{ inputs.project }}"
