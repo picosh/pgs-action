@@ -1,6 +1,7 @@
 #!/bin/sh -l
+set -x
 
-echo ssh -V
+ssh -V
 
 echo -e "${INPUT_KEY}" > __TEMP_INPUT_KEY_FILE
 
