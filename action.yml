@@ -1,12 +1,12 @@
-name: 'pgs.sh publish action'
-description: 'Action to publish projects to pgs.sh'
+name: 'pgs-action'
+description: 'Github Action to publish static site to pgs.sh'
 author: 'picosh'
 branding:
   icon: 'upload-cloud'
   color: 'blue'
 inputs:
   user:
-    description: 'SSH User name'
+    description: 'SSH username'
     required: true
   key:
     description: 'Private key'

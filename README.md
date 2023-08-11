@@ -1,4 +1,4 @@
-# pgs-publish-action
+# pgs-action
 
 Action to publish static site to [pgs.sh](https://pgs.sh).
 
