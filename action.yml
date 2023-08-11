@@ -1,0 +1,30 @@
+name: 'pgs.sh publish action'
+description: 'Action to publish projects to pgs.sh'
+author: 'picosh'
+branding:
+  icon: 'upload-cloud'
+  color: 'blue'
+inputs:
+  user:
+    description: 'SSH User name'
+    required: true
+  key:
+    description: 'Private key'
+    required: true
+  src:
+    description: 'Recursive files to deploy'
+    required: true
+  project:
+    description: 'Project to deploy'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Check Runner OS
+      if: ${{ runner.os != 'Linux' }}
+      shell: bash
+      run: |
+        echo "::error title=⛔ error hint::Support Linux Only"
+        exit 1
+    - run: publish.sh
+      shell: sh
