@@ -1,9 +1,7 @@
 #!/bin/sh -l
-set -x
-
 ssh -V
 
-echo -e "${INPUT_KEY}" > __TEMP_INPUT_KEY_FILE
+echo -e "${INPUT_KEY}" >__TEMP_INPUT_KEY_FILE
 
 chmod 600 __TEMP_INPUT_KEY_FILE
 
