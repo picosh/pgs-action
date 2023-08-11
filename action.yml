@@ -27,6 +27,7 @@ runs:
         echo "::error title=⛔ error hint::Support Linux Only"
         exit 1
     - name: upload to pgs
+      shell: bash
       run: |
         echo -e "${{ inputs.key }}" >__TEMP_INPUT_KEY_FILE
         chmod 600 __TEMP_INPUT_KEY_FILE
