@@ -1,6 +1,6 @@
 # pgs-action
 
-Action to publish static site to [pgs.sh](https://pgs.sh).
+Github Action to publish static sites to [pgs.sh](https://pgs.sh).
 
 ## Required params
 
@@ -35,7 +35,7 @@ jobs:
       - uses: actions/checkout@master
 
       - name: publish to pgs
-        uses: picosh/pgs-publish-action@main
+        uses: picosh/pgs-action@main
         with: 
           user: erock 
           key: ${{ secrets.PRIVATE_KEY }}
