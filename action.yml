@@ -17,6 +17,9 @@ inputs:
   project:
     description: 'Project to deploy'
     required: true
+  promote:
+    description: 'Promote project to this deployment'
+    required: false
 runs:
   using: 'composite'
   steps:
@@ -26,10 +29,21 @@ runs:
       run: |
         echo "::error title=⛔ error hint::Support Linux Only"
         exit 1
-    - name: upload to pgs
+    - name: setup private key
       shell: bash
       run: |
         echo -e "${{ inputs.key }}" >__TEMP_INPUT_KEY_FILE
         chmod 600 __TEMP_INPUT_KEY_FILE
+    - name: upload to pgs
+      shell: bash
+      run: |
         scp -s -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -v -i __TEMP_INPUT_KEY_FILE -r ${{ inputs.src }} "${{ inputs.user }}"@pgs.sh:/"${{ inputs.project }}"
+    - name: link project
+      if: ${{ inputs.promote != '' }}
+      shell: bash
+      run: |
+        ssh "${{ inputs.user }}"@pgs.sh link "${{ inputs.promote }}" "${{ inputs.project }}"
+    - name: remove private key
+      shell: bash
+      run: |
         rm __TEMP_INPUT_KEY_FILE
