@@ -42,7 +42,7 @@ runs:
       if: ${{ inputs.promote != '' }}
       shell: bash
       run: |
-        ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -v -i __TEMP_INPUT_KEY_FILE "${{ inputs.user }}"@pgs.sh "${{ inputs.promote }}" link "${{ inputs.project }}"
+        ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -v -i __TEMP_INPUT_KEY_FILE "${{ inputs.user }}"@pgs.sh link "${{ inputs.promote }}" "${{ inputs.project }}"
     - name: remove private key
       shell: bash
       run: |
