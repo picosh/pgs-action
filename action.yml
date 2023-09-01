@@ -20,6 +20,9 @@ inputs:
   promote:
     description: 'Promote project to this deployment'
     required: false
+  retain:
+    description: 'Removes all projects except the last (3) recently updated projects that match prefix provided'
+    required: false
 runs:
   using: 'composite'
   steps:
@@ -43,6 +46,11 @@ runs:
       shell: bash
       run: |
         ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -v -i __TEMP_INPUT_KEY_FILE "${{ inputs.user }}"@pgs.sh link "${{ inputs.promote }}" "${{ inputs.project }}" --write
+    - name: retain projects
+      if: ${{ inputs.retain != '' }}
+      shell: bash
+      run: |
+        ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -v -i __TEMP_INPUT_KEY_FILE "${{ inputs.user }}"@pgs.sh retain "${{ inputs.retain }}" --write
     - name: remove private key
       shell: bash
       run: |
