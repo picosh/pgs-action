@@ -10,12 +10,13 @@ Github Action to publish static sites to [pgs.sh](https://pgs.sh).
 - `project`: Project name
 - `promote`: Once the files have been uploaded to `project` we will promote it
   by symbolically linking this project to it
-- `retain`: Removes all projects except the last (3) recently updated projects that match prefix provided
+- `retain`: Removes all projects except the last (3) recently updated projects
+  that match prefix provided
 
 ## To publish
 
 You will need to copy your ssh private key into a secret in your github repo.
-This means your key will be accessible from github.  It is highly recommended
+This means your key will be accessible from github. It is highly recommended
 that you create a separate key specifically for pico services that way you can
 quickly log into pico and remove the key if there's a breach on github.
 
