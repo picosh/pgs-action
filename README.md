@@ -51,6 +51,6 @@ jobs:
           # once the files have been uploaded to the project above, promote the
           # production project by symbolically linking to it
           promote: 'neovimcraft'
-          # keep the latest (3) projects and delete the rest
+          # keep the latest (3) projects matching prefix provided and delete the rest
           retain: 'neovimcraft-'
 ```
