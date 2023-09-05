@@ -8,6 +8,9 @@ Github Action to publish static sites to [pgs.sh](https://pgs.sh).
 - `key`: Private key
 - `src`: Source dir to deploy
 - `project`: Project name
+- `promote`: Once the files have been uploaded to `project` we will promote it
+  by symbolically linking this project to it
+- `retain`: Removes all projects except the last (3) recently updated projects that match prefix provided
 
 ## To publish
 
@@ -34,11 +37,20 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
+      - name: Set outputs
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - name: publish to pgs
         uses: picosh/pgs-action@main
         with: 
           user: erock 
           key: ${{ secrets.PRIVATE_KEY }}
           src: './public/*'
-          project: 'neovimcraft'
+          # create a new project on-the-fly using git commit hash
+          project: 'neovimcraft-${{ steps.vars.outputs.sha_short }}'
+          # once the files have been uploaded to the project above, promote the
+          # production project by symbolically linking to it
+          promote: 'neovimcraft'
+          # keep the latest (3) projects and delete the rest
+          retain: 'neovimcraft-'
 ```
