@@ -16,8 +16,8 @@ Github Action to publish static sites to [pgs.sh](https://pgs.sh).
 
 You will need to copy your ssh private key into a secret in your github repo.
 This means your key will be accessible from github.  It is highly recommended
-that you create a separate key specifically for github that way the private key
-will only have access to your account if there is a breach on github.
+that you create a separate key specifically for pico services that way you can
+quickly log into pico and remove the key if there's a breach on github.
 
 ### Example
 
