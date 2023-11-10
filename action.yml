@@ -40,7 +40,7 @@ runs:
     - name: upload to pgs
       shell: bash
       run: |
-        scp -s -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -v -i __TEMP_INPUT_KEY_FILE -r ${{ inputs.src }} "${{ inputs.user }}"@pgs.sh:/"${{ inputs.project }}"
+        rsync -rv -e "ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -v -i __TEMP_INPUT_KEY_FILE" ${{ inputs.src }} "${{ inputs.user }}"@pgs.sh:/"${{ inputs.project }}"
     - name: link project
       if: ${{ inputs.promote != '' }}
       shell: bash
