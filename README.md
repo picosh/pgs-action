@@ -46,7 +46,8 @@ jobs:
         with: 
           user: erock 
           key: ${{ secrets.PRIVATE_KEY }}
-          src: './public'
+          # trailing slash is critical (we use rsync)
+          src: './public/'
           # create a new project on-the-fly using git commit hash
           project: 'neovimcraft-${{ steps.vars.outputs.sha_short }}'
           # once the files have been uploaded to the project above, promote the
