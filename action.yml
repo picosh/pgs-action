@@ -21,8 +21,12 @@ inputs:
     description: 'Promote project to this deployment'
     required: false
   retain:
-    description: 'Removes all projects except the last (3) recently updated projects that match prefix provided'
+    description: 'Removes all projects except the latest (N) updated projects that match prefix'
     required: false
+  retain_num:
+    description: 'The latest updated number of projects to keep'
+    required: false
+    default: 3
 runs:
   using: 'composite'
   steps:
@@ -40,17 +44,29 @@ runs:
     - name: upload to pgs
       shell: bash
       run: |
-        rsync -rv -e "ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -v -i __TEMP_INPUT_KEY_FILE" ${{ inputs.src }} "${{ inputs.user }}"@pgs.sh:/"${{ inputs.project }}"
+        rsync -rv \
+          -e "ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -v -i __TEMP_INPUT_KEY_FILE" \
+          "${{ inputs.src }}" \
+          "${{ inputs.user }}"@pgs.sh:/"${{ inputs.project }}"
     - name: link project
       if: ${{ inputs.promote != '' }}
       shell: bash
       run: |
-        ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -v -i __TEMP_INPUT_KEY_FILE "${{ inputs.user }}"@pgs.sh link "${{ inputs.promote }}" "${{ inputs.project }}" --write
+        ssh -v \
+          -o IdentitiesOnly=yes \
+          -o StrictHostKeyChecking=no \
+          -i __TEMP_INPUT_KEY_FILE \
+          "${{ inputs.user }}"@pgs.sh \
+          link "${{ inputs.promote }}" --to "${{ inputs.project }}" --write
     - name: retain projects
       if: ${{ inputs.retain != '' }}
       shell: bash
       run: |
-        ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -v -i __TEMP_INPUT_KEY_FILE "${{ inputs.user }}"@pgs.sh retain "${{ inputs.retain }}" --write
+        ssh -v \
+          -o IdentitiesOnly=yes \
+          -o StrictHostKeyChecking=no \
+          -i __TEMP_INPUT_KEY_FILE \
+          "${{ inputs.user }}"@pgs.sh retain "${{ inputs.retain }}" -n "${{inputs.retain_num}}" --write
     - name: remove private key
       shell: bash
       run: |
