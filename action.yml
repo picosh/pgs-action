@@ -44,10 +44,12 @@ runs:
     - name: upload _pgs_ignore
       shell: bash
       run: |
-        rsync -rv \
-          -e "ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -v -i __TEMP_INPUT_KEY_FILE" \
-          "${{ inputs.src }}/_pgs_ignore" \
-          "${{ inputs.user }}"@pgs.sh:/"${{ inputs.project }}"
+        if test -f "${{ inputs.src }}/_pgs_ignore"; then
+          rsync -rv \
+            -e "ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -v -i __TEMP_INPUT_KEY_FILE" \
+            "${{ inputs.src }}/_pgs_ignore" \
+            "${{ inputs.user }}"@pgs.sh:/"${{ inputs.project }}"
+        fi
     - name: upload to pgs
       shell: bash
       run: |
