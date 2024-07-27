@@ -43,7 +43,6 @@ runs:
         chmod 600 __TEMP_INPUT_KEY_FILE
     - name: upload _pgs_ignore
       shell: bash
-      if: ${{ hashFiles('${{ inputs.src }}/_pgs_ignore') != '' }}
       run: |
         rsync -rv \
           -e "ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -v -i __TEMP_INPUT_KEY_FILE" \
