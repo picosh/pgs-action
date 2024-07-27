@@ -41,6 +41,14 @@ runs:
       run: |
         echo -e "${{ inputs.key }}" >__TEMP_INPUT_KEY_FILE
         chmod 600 __TEMP_INPUT_KEY_FILE
+    - name: upload _pgs_ignore
+      shell: bash
+      if: ${{ hashFiles('${{ inputs.src }}/_pgs_ignore') != '' }}
+      run: |
+        rsync -rv \
+          -e "ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -v -i __TEMP_INPUT_KEY_FILE" \
+          "${{ inputs.src }}/_pgs_ignore" \
+          "${{ inputs.user }}"@pgs.sh:/"${{ inputs.project }}"
     - name: upload to pgs
       shell: bash
       run: |
