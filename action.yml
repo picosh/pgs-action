@@ -92,10 +92,8 @@ runs:
       shell: bash
       run: |
         rm __TEMP_INPUT_KEY_FILE
-        rm __TEMP_INPUT_CERT_PUBKEY
     - name: remove cert public key
       if: ${{ inputs.cert_pubkey }}
       shell: bash
       run: |
-        rm __TEMP_INPUT_KEY_FILE
         rm __TEMP_INPUT_CERT_PUBKEY
