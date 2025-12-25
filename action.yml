@@ -5,9 +5,6 @@ branding:
   icon: 'upload-cloud'
   color: 'blue'
 inputs:
-  user:
-    description: 'SSH username'
-    required: true
   key:
     description: 'Private key'
     required: true
@@ -17,6 +14,9 @@ inputs:
   project:
     description: 'Project to deploy'
     required: true
+  cert_key:
+    description: 'Certified public key used with SSH certificates'
+    required: false
   promote:
     description: 'Promote project to this deployment'
     required: false
@@ -27,6 +27,10 @@ inputs:
     description: 'The latest updated number of projects to keep'
     required: false
     default: 3
+  user: # deprecated
+    description: 'Pico username'
+    required: false
+    deprecationMessage: 'This input is no longer used so can be safely removed'
 runs:
   using: 'composite'
   steps:
@@ -41,22 +45,28 @@ runs:
       run: |
         echo -e "${{ inputs.key }}" >__TEMP_INPUT_KEY_FILE
         chmod 600 __TEMP_INPUT_KEY_FILE
+    - name: setup cert public key
+      if: ${{ inputs.cert_key }}
+      shell: bash
+      run: |
+        echo -e "${{ inputs.cert_key }}" >__TEMP_INPUT_CERT_PUBKEY
+        chmod 600 __TEMP_INPUT_CERT_PUBKEY
     - name: upload _pgs_ignore
       shell: bash
       run: |
         if test -f "${{ inputs.src }}/_pgs_ignore"; then
           rsync -rv \
-            -e "ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -v -i __TEMP_INPUT_KEY_FILE" \
+            -e "ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -o CertificateFile=__TEMP_INPUT_CERT_PUBKEY -v -i __TEMP_INPUT_KEY_FILE" \
             "${{ inputs.src }}/_pgs_ignore" \
-            "${{ inputs.user }}"@pgs.sh:/"${{ inputs.project }}"
+            pgs.sh:/"${{ inputs.project }}"
         fi
     - name: upload to pgs
       shell: bash
       run: |
         rsync -rv \
-          -e "ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -v -i __TEMP_INPUT_KEY_FILE" \
+          -e "ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -o CertificateFile=__TEMP_INPUT_CERT_PUBKEY -v -i __TEMP_INPUT_KEY_FILE" \
           "${{ inputs.src }}" \
-          "${{ inputs.user }}"@pgs.sh:/"${{ inputs.project }}"
+          pgs.sh:/"${{ inputs.project }}"
     - name: link project
       if: ${{ inputs.promote != '' }}
       shell: bash
@@ -64,8 +74,9 @@ runs:
         ssh -v \
           -o IdentitiesOnly=yes \
           -o StrictHostKeyChecking=no \
+          -o CertificateFile=__TEMP_INPUT_CERT_PUBKEY \
           -i __TEMP_INPUT_KEY_FILE \
-          "${{ inputs.user }}"@pgs.sh \
+          pgs.sh \
           link "${{ inputs.promote }}" --to "${{ inputs.project }}" --write
     - name: retain projects
       if: ${{ inputs.retain != '' }}
@@ -74,9 +85,17 @@ runs:
         ssh -v \
           -o IdentitiesOnly=yes \
           -o StrictHostKeyChecking=no \
+          -o CertificateFile=__TEMP_INPUT_CERT_PUBKEY \
           -i __TEMP_INPUT_KEY_FILE \
-          "${{ inputs.user }}"@pgs.sh retain "${{ inputs.retain }}" -n "${{inputs.retain_num}}" --write
+          pgs.sh retain "${{ inputs.retain }}" -n "${{inputs.retain_num}}" --write
     - name: remove private key
       shell: bash
       run: |
         rm __TEMP_INPUT_KEY_FILE
+        rm __TEMP_INPUT_CERT_PUBKEY
+    - name: remove cert public key
+      if: ${{ inputs.cert_key }}
+      shell: bash
+      run: |
+        rm __TEMP_INPUT_KEY_FILE
+        rm __TEMP_INPUT_CERT_PUBKEY
