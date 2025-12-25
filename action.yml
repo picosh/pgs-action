@@ -14,7 +14,7 @@ inputs:
   project:
     description: 'Project to deploy'
     required: true
-  cert_key:
+  cert_pubkey:
     description: 'Certified public key used with SSH certificates'
     required: false
   promote:
@@ -26,7 +26,7 @@ inputs:
   retain_num:
     description: 'The latest updated number of projects to keep'
     required: false
-    default: 3
+    default: 1
   user: # deprecated
     description: 'Pico username'
     required: false
@@ -46,10 +46,10 @@ runs:
         echo -e "${{ inputs.key }}" >__TEMP_INPUT_KEY_FILE
         chmod 600 __TEMP_INPUT_KEY_FILE
     - name: setup cert public key
-      if: ${{ inputs.cert_key }}
+      if: ${{ inputs.cert_pubkey }}
       shell: bash
       run: |
-        echo -e "${{ inputs.cert_key }}" >__TEMP_INPUT_CERT_PUBKEY
+        echo -e "${{ inputs.cert_pubkey }}" >__TEMP_INPUT_CERT_PUBKEY
         chmod 600 __TEMP_INPUT_CERT_PUBKEY
     - name: upload _pgs_ignore
       shell: bash
@@ -94,7 +94,7 @@ runs:
         rm __TEMP_INPUT_KEY_FILE
         rm __TEMP_INPUT_CERT_PUBKEY
     - name: remove cert public key
-      if: ${{ inputs.cert_key }}
+      if: ${{ inputs.cert_pubkey }}
       shell: bash
       run: |
         rm __TEMP_INPUT_KEY_FILE
