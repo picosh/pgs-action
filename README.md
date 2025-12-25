@@ -4,14 +4,15 @@ Github Action to publish static sites to [pgs.sh](https://pgs.sh).
 
 ## Required params
 
-- `user`: SSH User name
 - `key`: Private key
+- `cert_pubkey`: Certified public key used with SSH certificates
 - `src`: Source dir to deploy
 - `project`: Project name
 - `promote`: Once the files have been uploaded to `project` we will promote it
   by symbolically linking this project to it
-- `retain`: Removes all projects except the last (3) recently updated projects
+- `retain`: Removes all projects except the last (N) recently updated projects
   that match prefix provided
+- `retain_num`: The latest updated number of projects to keep (default: 1)
 
 ## To publish
 
@@ -41,13 +42,10 @@ jobs:
       - uses: actions/checkout@master
       - name: publish to pgs
         uses: picosh/pgs-action@v3
-        with: 
-          user: erock 
+        with:
           key: ${{ secrets.PRIVATE_KEY }}
-          # trailing slash is important (we use rsync)
-          src: './public/'
-          # update or create a new project on-the-fly
-          project: 'neovimcraft'
+          src: './public/' # trailing slash is important (we use rsync)
+          project: 'neovimcraft' # update or create a new project on-the-fly
 ```
 
 ## Usage - Site promotion and retention policy
@@ -74,11 +72,8 @@ jobs:
       - name: publish to pgs
         uses: picosh/pgs-action@v3
         with: 
-          user: erock 
           key: ${{ secrets.PRIVATE_KEY }}
-          # trailing slash is important (we use rsync)
           src: './public/'
-          # create a new project on-the-fly using git commit hash
           project: 'neovimcraft-${{ steps.vars.outputs.sha_short }}'
           # once the files have been uploaded to the project above, promote the
           # production project by symbolically linking to the project we just created
@@ -87,4 +82,34 @@ jobs:
           retain: 'neovimcraft-'
           # retention policy: num of recently updated projects to keep
           retain_num: 1
+```
+
+## Usage - SSH Certificate Authentication
+
+https://pico.sh/access-control
+
+If you are using SSH certificates for access control then you need to add your certified pubkey in addition to your bot's private key.
+
+```yml
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build and Deploy
+
+    steps:
+      - uses: actions/checkout@master
+      - name: publish to pgs
+        uses: picosh/pgs-action@v3
+        with:
+          key: ${{ secrets.PRIVATE_KEY }}
+          cert_pubkey: ${{ secrets.CERT_PUBKEY }}
+          src: './public/' # trailing slash is important (we use rsync)
+          project: 'neovimcraft' # update or create a new project on-the-fly
 ```
